@@ -6,4 +6,8 @@ Credit for the idea of having a "-future" repo goes to [react-future](https://gi
 
 # Contributing
 
-Join in the discussion by opening an issue or a pull request.
+See [CONTRIBUTING.md](https://github.com/relayjs/relay-future/blob/master/CONTRIBUTING.md).
+
+# License
+
+See [LICENSE.md](https://github.com/relayjs/relay-future/blob/master/LICENSE.md).

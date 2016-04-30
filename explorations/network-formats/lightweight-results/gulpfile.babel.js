@@ -1,3 +1,11 @@
+/**
+ * Copyright 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 import babel from 'gulp-babel';
 import eslint from 'gulp-eslint';
 import flow from 'gulp-flowtype';

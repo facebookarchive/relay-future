@@ -16,18 +16,18 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/wincent/minimal-npm-boilerplate.git"
+    "url": "https://github.com/relayjs/relay-future.git"
   },
   "author": {
     "name": "Greg Hurrell",
     "email": "glh@fb.com",
     "url": "https://github.com/wincent"
   },
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "bugs": {
-    "url": "https://github.com/wincent/minimal-npm-boilerplate/issues"
+    "url": "https://github.com/relayjs/relay-future/issues"
   },
-  "homepage": "https://github.com/wincent/minimal-npm-boilerplate",
+  "homepage": "https://github.com/relayjs/relay-future/tree/master/explorations/network-formats/lightweight-results",
   "devDependencies": {
     "babel": "5.8.20",
     "babel-eslint": "4.0.5",

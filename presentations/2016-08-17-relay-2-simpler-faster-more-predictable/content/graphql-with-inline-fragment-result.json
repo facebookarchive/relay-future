@@ -1,0 +1,10 @@
+{
+  "node": {
+    "address": {
+      "city": "Menlo Park",
+      "street": "1 Hacker Way",
+      "zipCode": "94025"
+    },
+    "name": "Greg Hurrell"
+  }
+}

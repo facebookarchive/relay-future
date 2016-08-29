@@ -1,0 +1,12 @@
+query ProfileQuery {
+  node(id: 4) {
+    ... on User {
+      address {
+        city
+        street
+        zipCode
+      }
+      name
+    }
+  }
+}

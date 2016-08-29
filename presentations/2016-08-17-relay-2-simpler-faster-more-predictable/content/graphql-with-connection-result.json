@@ -1,0 +1,19 @@
+{
+  "viewer": {
+    "feed": {
+      "count": 1,
+      "edges": [{
+        "cursor": "ZmVlZDpmYWNlYjAwYzox",
+        "node": {
+          "title": "Relay release notes",
+          "body": "...",
+          "likeCount": 12
+        }
+      }],
+      "pageInfo": {
+        "endCursor": "ZmVlZDpmYWNlYjAwYzoy",
+        "hasNextPage": false
+      }
+    }
+  }
+}

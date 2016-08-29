@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Relay 2: simpler, faster, more predictable</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base target="_blank">
+    <style media="screen" type="text/css">
+      a {
+        color: #000;
+        text-decoration: none;
+      }
+
+      article {
+        position: relative;
+      }
+
+      body {
+        font-family: FreightSansLFPro, sans-serif;
+        font-size: 200%;
+        font-weight: 200;
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        font-weight: 600;
+      }
+
+      h2 {
+        font-weight: 500;
+      }
+
+      h3 {
+        font-weight: 400;
+      }
+
+      html {
+        box-sizing: border-box;
+      }
+
+      iframe {
+        display: none;
+        height: 0;
+        width: 0;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      li {
+        margin-bottom: 1rem;
+      }
+
+      pre {
+        padding: .5em;
+      }
+
+      pre > code {
+        /* Want to measure the natural size of the text, unconstrained by flow. */
+        position: absolute;
+      }
+
+      pre > code.hljs {
+        /* Don't let hljs throw off our auto-resizing calculations. */
+        padding: 0;
+      }
+
+      section {
+        --horizontal-padding: 60px;
+        --vertical-padding: 40px;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 2 * var(--vertical-padding));
+        justify-content: center;
+        opacity: 0;
+        overflow: hidden;
+        padding: var(--vertical-padding) var(--horizontal-padding);
+        position: absolute;
+        visibility: hidden;
+        transition: visiblility 0s, opacity .25s linear;
+        width: calc(100vw - 2 * var(--horizontal-padding));
+      }
+
+      strong {
+        font-weight: 500;
+      }
+
+      .bet {
+        background-image: url(bet.jpg);
+      }
+
+      .center {
+        align-self: center;
+      }
+
+      .cheetah {
+        background-image: url(cheetah.jpg);
+      }
+
+      .container {
+        background-image: url(container.jpg);
+      }
+
+      .current {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .dark {
+        color: #fff;
+        text-shadow: 1px 1px 2px #000;
+      }
+
+      .diff:before {
+        -webkit-filter: blur(2px);
+        background-image: url(diff.jpg);
+      }
+
+      .faster {
+        background-image: url(faster.jpg);
+      }
+
+      .fat {
+        background-image: url(fat-queries.jpg);
+      }
+
+      .framework {
+        background-image: url(framework.jpg);
+      }
+
+      .full {
+        flex-grow: 1;
+      }
+
+      .goal {
+        background-image: url(goal.jpg);
+      }
+
+      .graph {
+        background-image: url(graph.png);
+        /* normal "light" class is not enough for readability here */
+        color: #fff;
+        text-shadow: 2px 2px 20px #000,
+                     -2px 2px 20px #000,
+                     2px -2px 20px #000,
+                     -2px -2px 20px #000;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .huge {
+        font-size: 10rem;
+        text-align: center;
+      }
+
+      .important {
+        background-color: yellow;
+      }
+
+      .left {
+        align-self: flex-start;
+      }
+
+      .light {
+        text-shadow: 1px 1px 2px #fff;
+      }
+
+      .performance {
+        background-image: url(performance.jpg);
+      }
+
+      .philosoraptor {
+        background-image: url(philosoraptor.jpg);
+      }
+
+      .phone {
+        background-image: url(phone.jpg);
+      }
+
+      .photo,
+      .photo:before {
+        background-position: center;
+        background-size: cover;
+      }
+
+      .photo:before {
+        content: ' ';
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: -1;
+      }
+
+      .predictable {
+        background-image: url(predictable.jpg);
+      }
+
+      .relay-logo {
+        align-self: center;
+        max-height: 200px;
+      }
+
+      .road {
+        background-image: url(road.jpg);
+      }
+
+      .rocket:before {
+        -webkit-filter: blur(10px);
+        background-image: url(rocket.jpg);
+      }
+
+      .simpler {
+        background-image: url(simpler.jpg);
+      }
+
+      .slides {
+        height: 100vh;
+        width: 100vw;
+      }
+
+      .speed {
+        background-image: url(speed.jpg);
+      }
+
+      .split {
+        background-image: url(split.jpg);
+      }
+
+      .stars:before {
+        /* -webkit-filter: blur(5px); */
+        background-image: url(stars.jpg);
+      }
+
+      .stretch {
+        background-image: url(stretch.jpg);
+      }
+
+      .tti {
+        background-image: url(tti.jpg);
+      }
+
+      .tracked {
+        background-image: url(tracked-queries.jpg);
+      }
+
+      .two-columns {
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .two-columns > div {
+        flex-basis: calc(50vw - 100px);
+      }
+
+      #presenter {
+        -webkit-user-select: none;
+        background-color: #fff;
+        border-right: 1px solid #ddd;
+        display: inline-block;
+        font-size: 1rem;
+        opacity: .95;
+        padding: 10px;
+        position: fixed;
+        left: 0;
+      }
+
+      #notes {
+        background-color: #eee;
+        border-left: 1px solid #aaa;
+        bottom: 0;
+        box-shadow: 20px 10px 50px 40px rgba(0, 0, 0, .25);
+        max-width: 50vw;
+        opacity: .95;
+        padding: 16px;
+        position: fixed;
+        right: 0;
+        top: 0;
+        width: 800px;
+      }
+
+      #notes p:first-child {
+        margin-top: 0;
+      }
+
+      #notes p:last-child {
+        margin-bottom: 0;
+      }
+
+      #presenter {
+        border-bottom: 1px solid #ddd;
+        top: 0;
+      }
+
+      #presenter-toggle {
+        cursor: pointer;
+      }
+
+      #timer {
+        color: #000;
+        font-size: 25vh;
+        opacity: .25;
+        position: fixed;
+        right: 10px;
+        text-align: center;
+        bottom: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="vendor/highlight/styles/googlecode.css">
+  </head>
+  <body>
+    <article id="slides">
+
+      <!-- Blank side for use during set-up. -->
+      <section>
+      </section>
+
+      <section class="dark photo stars">
+        <h1>Relay 2: simpler, faster, more predictable</h1>
+        <svg class="relay-logo" xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600"><g fill="#F26B00"> <path d="M142.536 198.858c0 26.36-21.368 47.72-47.72 47.72-26.36 0-47.722-21.36-47.722-47.72s21.36-47.72 47.72-47.72c26.355 0 47.722 21.36 47.722 47.72"/><path d="M505.18 414.225H238.124c-35.25 0-63.926-28.674-63.926-63.923s28.678-63.926 63.926-63.926h120.78c20.816 0 37.753-16.938 37.753-37.756s-16.938-37.756-37.753-37.756H94.81c-7.227 0-13.086-5.86-13.086-13.085 0-7.227 5.86-13.086 13.085-13.086h264.093c35.25 0 63.923 28.678 63.923 63.926s-28.674 63.923-63.923 63.923h-120.78c-20.82 0-37.756 16.938-37.756 37.76 0 20.816 16.938 37.753 37.756 37.753H505.18c7.227 0 13.086 5.86 13.086 13.085 0 7.226-5.858 13.085-13.085 13.085z"/><path d="M457.464 401.142c0-26.36 21.36-47.72 47.72-47.72s47.72 21.36 47.72 47.72-21.36 47.72-47.72 47.72-47.72-21.36-47.72-47.72"/></g></svg>
+        <h2>Greg Hurrell</h2>
+        <h3>@wincent</h3>
+        <!-- I'm Greg Hurrell. -->
+        <!-- I work at Facebook on Relay. -->
+      </section>
+
+      <section>
+        <h1>What we'll be covering</h1>
+        <ol>
+          <li>Relay today</li>
+          <li>"Relay 2"</li>
+        </ol>
+        <!-- Note that "Relay 2" isn't an official product or version name; I
+          just needed a label to describe what we've been working on for the
+          last few months. -->
+        <!-- This will be the next major version of Relay, and is a ground up
+          rewrite. -->
+      </section>
+
+      <section>
+        <h1>Relay today</h1>
+        <!-- Let's start with an overview of the state of Relay today. -->
+        <!-- I'm going to give a very brief intro to what Relay is for those of
+          you who may not be familiar with it. -->
+      </section>
+
+      <section class="dark framework photo">
+        <h1>Relay is a framework for building data-driven applications with
+          React and GraphQL</h1>
+        <!-- Let me unpack that a little bit. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">const app = (data) =&gt; view;</code></pre>
+        <!-- You've probably seen a picture like this before. -->
+        <!-- What it shows is that your app can be thought of as a function of
+          data to a corresponding view. -->
+        <!-- But what is the shape of that data, and what's the shape of the
+          view? -->
+        <!-- Thinking functionally about it, the user interface can be thought
+          of as the projection of the (hierarchical) data onto a (hierachical)
+          view. -->
+      </section>
+
+      <section>
+        <p>Hierarchical user interface</p>
+        <p>Hierarchical data dependencies</p>
+        <p>Hierarchical query language</p>
+        <!-- In practice, our user interfaces are hierarchical and the data
+          required by the UI tends to be hierarchical as well. -->
+        <!-- This calls for a hierarchical query language too, so that we can
+          have a nice impedance match throughout. -->
+      </section>
+
+      <section>
+        <p>Hierarchical user interface (React)</p>
+        <p>Hierarchical data dependencies (JSON)</p>
+        <p>Hierarchical query language (GraphQL)</p>
+        <!-- In practice, these are the tools and formats that we use for each
+          of these concerns. -->
+        <!-- Will show some examples of GraphQL in a bit. -->
+        <!-- Let's take a visual look at these. -->
+      </section>
+
+      <section>
+        <img class="full" src="view-hierarchy.svg" />
+        <!-- Here is a typical user interface. -->
+        <!-- We build up views in a hierarchical way out of view components. -->
+      </section>
+
+      <section>
+        <pre><code class="json">{
+  "header": {
+    "notifications": [{
+      "text": "...",
+      "timestamp": 1470034847
+    }]
+  },
+  "sidebar": {
+    "bookmarks": [{
+      "name": "...",
+      "url": "...",
+    }]
+  },
+  "content": {
+    "feedItems": [{
+      "title": "...",
+      "thumbnailUrl": "..."
+    }],
+  },
+}</code></pre>
+        <!-- And the data dependencies of those view components tend to be
+          hierarchical as well. -->
+        <!-- The shape of the data matches the shape of the UI. -->
+        <!-- At least, it does if your system has been architected so as to make
+          things easier for the product developer. -->
+        <!-- This is actually one of the great insights of GraphQL. It allows
+          the design of the UI to drive the expression of the data in the
+          schema. You don't start with a UML diagram and some sticks and arrows.
+          You start from the product, and you expose the essence of the product,
+          what it is, by moving inwards from the surface. -->
+      </section>
+
+      <section>
+        <script src="graphql-query.txt" type="text/plain"></script>
+        <!-- So let's look at some examples of GraphQL. -->
+        <!-- I'm going to show three examples. -->
+        <!-- This is an example of a simple GraphQL query. -->
+        <!-- Notice: that it looks kind of like JSON without the values. -->
+        <!-- Or the commas. Punctuation is massively overrated. -->
+      </section>
+
+      <section>
+        <script src="graphql-result.json" type="text/plain"></script>
+        <!-- When we get the response back, it looks like this. -->
+      </section>
+
+      <section>
+        <pre><code class="graphql">query ProfileQuery {
+  node(id: 4) {
+    <span class="important">... on User</span> {
+      address {
+        city
+        street
+        zipCode
+      }
+      name
+    }
+  }
+}</code></pre>
+        <!-- Here's a slightly more complicated example. -->
+        <!-- This one shows how GraphQL has the notion of types. -->
+        <!-- Here we're fetching a "node", which could be any of a number of
+          different things, like a comment, or a post, or a page, or a user. -->
+        <!-- Note that GraphQL itself doesn't require you to implement a "node"
+        field, but it's a convention that we've found to be very useful at
+        Facebook. It means that you can refetch a record given just its id. -->
+        <!-- Example of fetching more fields for a node. -->
+        <!-- In this example we have a "User" type. -->
+        <!-- Those fields are only going to get fetched when the node happens to
+          be a user. -->
+        <!-- This type information enables a bunch of useful things, ranging
+          from simple query validation to deriving custom, statically typed
+          parsers and model classes. -->
+      </section>
+
+      <section>
+        <script src="graphql-with-inline-fragment-result.json" type="text/plain"></script>
+        <!-- The JSON response we get back looks pretty much the same as in the
+          first example. -->
+        <!-- Note that the type information encoded in the query is gone now,
+          but we have a couple of options for preserving it, including keeping
+          the query around to guide our processing of the result, and also
+          explicitly asking for type metadata as part of the query itself. -->
+      </section>
+
+      <section>
+        <pre><code class="graphql">query FeedQuery(<span class="important">$after: String</span>) {
+  viewer {
+    <span class="important">feed(first: 3, after: $after)</span> {
+      count
+      edges {
+        cursor
+        node {
+          body
+          likeCount
+          title
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}</code></pre>
+        <!-- This is the final example of GraphQL that I want to show. -->
+        <!-- This one is more complex, showing a connection (a pagination-aware
+        plural collection) and how both queries and fields may be parametrized
+        with variables. -->
+      </section>
+
+      <section>
+        <script src="graphql-with-connection-result.json" type="text/plain"></script>
+        <!-- And this is what the response looks like. -->
+      </section>
+
+      <section>
+        <script src="react.js" type="text/plain"></script>
+        <!-- Let's show how Relay makes use of this. -->
+        <!-- We take a React component... -->
+        <!-- which is a function from props to a description of the resulting UI -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">{
+  fragments: {
+    profilePic: () =&gt; Relay.QL`
+      <span class="important">fragment on User {</span>
+        <span class="important">name</span>
+        <span class="important">profilePic</span>
+      <span class="important">}</span>
+    `,
+  },
+}</code></pre>
+        <!-- And we colocate a GraphQL fragment alongside it... that is, in the
+          same file. -->
+        <!-- The fragment describes exactly the data needed by this specific
+          component in order for it to render. -->
+      </section>
+
+      <section>
+        <h1>Compose React components to make a UI</h1>
+      </section>
+
+      <section class="photo graph">
+        <h1>The composition of all GraphQL fragments</h1>
+        <h1>equals</h1>
+        <h1>The total data requirements of the app</h1>
+      </section>
+
+      <section>
+        <h1>Relay is the glue that holds it all together</h1>
+        <img class="full" src="glue.svg" />
+        <!-- In a robust, performant way. -->
+        <!-- Because Relay is used throughout the application, it can deal with
+          all of this GraphQL efficiently, in aggregate, and deliver good
+          performance while also providing developers with a great, ergonomic
+          development experience. -->
+        <!-- So that's what Relay is. Now let's look at its current status. -->
+      </section>
+
+      <section>
+        <h1>Usage at Facebook: React Native</h1>
+        <p>Ads Manager</p>
+        <p>Groups</p>
+        <p>Facebook</p>
+        <!-- Widely used in React Native apps at Facebook. -->
+        <!-- And Pokes dashboard. -->
+      </section>
+
+      <section>
+        <h1>Usage at Facebook: web</h1>
+        <p>Mobile site</p>
+        <p>Internal tools</p>
+        <p>Web site</p>
+        <!-- Many other usage sites. -->
+      </section>
+
+      <section>
+        <h1>Open source</h1>
+        <p>6.8k watchers</p>
+        <p>560 forks</p>
+        <p>675 pull requests</p>
+        <p>20 releases</p>
+        <!-- Highest profile users outside of Facebook include Twitter and my blog. -->
+        <!-- We've had some significant, complex PRs (server rendering,
+          mutations etc). -->
+        <!-- And a lively ecosystem featuring tools such as react-router-relay,
+          isomorphic-relay and recently react-relay-network-layer. -->
+      </section>
+
+      <section class="dark phone photo">
+        <h1>Relay 2</h1>
+        <!-- So let's talk about the future. -->
+        <!-- We wanted to move the performance bar, particularly on mobile
+          devices which are relatively underpowered and have less reliable
+          network connectivity compared to the typical desktop environment here
+          in sunny California. -->
+      </section>
+
+      <section class="cheetah dark photo">
+        <h1>Simpler, faster, more predictable</h1>
+        <!-- We knew that we wanted Relay to be dramatically simpler, faster and
+          more predictable. -->
+        <!-- We also wanted to revisit some long-held assumptions with the goal
+          of making the system easier to comprehend, maintain and evolve. -->
+        <!-- We didn't want this to be an incremental revision, but a
+          significant upgrade. -->
+        <!-- In short, we wanted to place a big bet. -->
+        <!-- We started by asking ourselves, what are the essential features of
+          Relay that we want to preserve? -->
+      </section>
+
+      <section>
+        <h1>Declarative API</h1>
+        <p>Don't worry about <em>how</em> the data is fetched.</p>
+        <p>Or even <em>when</em> it is fetched</p>
+        <p>The framework <em>orchestrates</em> the data-fetching</p>
+        <!-- This is the first key idea. -->
+      </section>
+
+      <section>
+        <h1>Colocated GraphQL with React components</h1>
+        <!-- Another key. -->
+        <!-- Enables component-local reasoning. -->
+        <!-- The ability to modify a section of the application
+          without having to worry about changes affecting other parts of the app
+          in unpredictable ways. -->
+      </section>
+
+      <section>
+        <img class="full" src="colocated.svg" />
+      </section>
+
+      <section>
+        <h1>Performance</h1>
+        <!-- Performance is a core tenet as well. -->
+        <!-- ... -->
+      </section>
+
+      <section class="dark performance photo">
+        <p>Aggregation into batches.</p>
+        <p>Caching.</p>
+        <p>Efficient <code>shouldComponentUpdate</code>.</p>
+        <!-- We knew that we wanted to keep all these features. -->
+        <!-- But everything else was up for discussion. And we knew we wanted to
+          make some big bets. -->
+      </section>
+
+      <section class="bet dark photo">
+        <h1>Big bets</h1>
+        <!-- So let's look at the three big bets that we've placed this year
+          with the goals of preserving the essence of Relay while significantly
+          improving the parameters of performance, simplicity, and
+          predictability, especially for mobile devices. -->
+      </section>
+
+      <section>
+        <p>Persisted queries</p>
+        <p><code class="javascript">RelayConnection</code></p>
+        <p>Fully static Relay 2</p>
+        <!-- These are the three categories of big bet that I'm going to look at
+          today. -->
+      </section>
+
+      <section>
+        <h1>Persisted queries</h1>
+        <!-- Something we've had on native for a long time. -->
+        <!-- But which was quite difficult to implement in Relay due to its
+          dynamism. -->
+      </section>
+
+      <section>
+        <img class="full" src="request-response.svg" />
+        <!-- Network performance is not only about bytes downloaded over the
+          wire. -->
+        <!-- The outbound request is hugely important too. -->
+        <!-- A GraphQL query for a complex application can actually correspond
+          to a large upload. -->
+        <!-- A query to fetch all of the data required for something like the
+          Facebook newsfeed, for example, can be thousands of lines of text. -->
+        <!-- Clearly, this matters in a big way, especially for mobile networks. -->
+      </section>
+
+      <section>
+        <pre><code class="json">{
+  "query": "query PostsIndexQueries {viewer {id,...F3}}↩
+  fragment F0 on Node {id,__typename} fragment F1 on↩
+  Tagged {tags,__typename,...F0} fragment F2 on Post↩
+  {id,title,createdAt,updatedAt,url,body {_html3xPqt8:↩
+  html(baseHeadingLevel:2)},...F1} fragment F3 on User↩
+  {_posts3KBCho:posts(first:3) {edges {node {id,...F2},↩
+  cursor},pageInfo {hasNextPage,hasPreviousPage}},id}↩
+  [thousands of lines]↩
+  ...",
+  "variables": {
+    "first": 10,
+    ...
+  }
+}</code></pre>
+        <!-- Instead of sending something that goes on like this for thousands
+          of lines... -->
+      </section>
+
+      <section>
+        <pre><code class="json">{
+  "documentId": "1234",
+  "variables": {
+    "first": 10
+  }
+}</code></pre>
+        <!-- We can send this. -->
+        <!-- We persist the query text to a database on the server, and then
+          send up an identifier that enables the server to locate the saved
+          query, along with any variables required as parameters to the query. -->
+      </section>
+
+      <section>
+        <p class="center">
+          <a href="https://github.com/graphql/express-graphql/pull/109">
+            https://github.com/graphql/express-graphql/pull/109
+          </a>
+        </p>
+        <p class="center">
+          <a href="https://goo.gl/ATFYSc">https://goo.gl/ATFYSc</a>
+        </p>
+        <!-- Obviously query persistence has existed at Facebook for a while
+          now, but it is just now taking its first steps into the outside world.
+        -->
+        <!-- Preview of this functionality up here. -->
+      </section>
+
+      <section>
+        <h2>Native prefetching</h2>
+        <img class="full" src="native-prefetching-timeline.svg" />
+        <!-- Not just about upload bytes. In the context of React Native, we can
+          start sending the query from the native side before the JavaScript
+          context has even been initialized. -->
+        <!-- (see diagram) -->
+        <!-- This can save us on the order of hundreds of milliseconds. -->
+        <!-- (next: RelayConnection) -->
+      </section>
+
+      <section>
+        <h1><code class="javascript">RelayConnection</code></h1>
+        <!-- RelayConnection is a lower level API that provides more granular
+          control over how egdes within a GraphQL connection are fetched and
+          garbage collected. -->
+        <!-- Instead of fetching all the items in a connection in one giant
+          blob, we can stream them down in smaller chunks — one at a time, for
+          instance — and process and render them as we receive them. -->
+      </section>
+
+      <section>
+        <h2><code class="javascript">RelayConnection</code> timeline</h2>
+        <img class="full" src="relay-connection-timeline.svg" />
+        <!-- This diagram shows the difference. -->
+        <!-- Up the top, the "classic" connection API. -->
+        <!-- Down the bottom, the new RelayConnection API. -->
+        <!-- Roughly the same amount of work gets done, but it is done in a
+          streamier, more yieldy fashion. -->
+        <!-- In between, animation, gestures, and user interaction can continue
+          to be processed fluidly. -->
+      </section>
+
+      <section>
+        <h1>Going further</h1>
+        <!-- So those two pieces — persisted queries and RelayConnection — exist
+          in current Relay today. We learnt a lot from pursuing those projects. -->
+        <!-- But as I said earlier, we wanted to go further. -->
+        <!-- We had aggressive performance goals in mind and we didn't want to
+          grind towards them incrementally, but rather leap ahead, making
+          drastic changes if necessary. -->
+      </section>
+
+      <section>
+        <h1>What if <em>every</em> query in Relay were persistable?</h1>
+        <!-- We started with this quesion. -->
+        <!-- We knew there was a huge upside in terms of performance here, but
+          the problem... -->
+      </section>
+
+      <section>
+        <h1>Problem: dynamism makes query persistence hard</h1>
+        <!-- Is that Relay 1 is inherently dynamic. -->
+        <!-- Eliminating that dynamism was going to require some drastic
+          changes. -->
+        <!-- I'm going to give some examples. -->
+      </section>
+
+      <section>
+        <img class="full" src="diff-query.svg" />
+        <!-- Here's one example of dynamism in Relay, a thing we call "diff
+          queries". -->
+        <!-- We start with a query describing the data requirements for a view. -->
+        <!-- We look in Relay's cache at the data we've previously fetched, and
+          strip away the parts of the query that would redundantly refetch that
+          data. -->
+        <!-- This produces a smaller query (sometimes even an empty query,
+          meaning that we don't have to hit the network at all). -->
+        <!-- This so-called "diff query" is dynamically constructed at runtime,
+          and therefore not persistable. -->
+      </section>
+
+      <section>
+        <img class="full" src="deferred.svg" />
+        <!-- Another example of dynamic query construction is deferred queries. -->
+        <!-- Let's say we're building a blog and making the permalink view for a
+          specific blog post. -->
+        <!-- We can mark part of the query as required (this could be the blog
+          post title, the body, information about the author and the publication
+          date). -->
+        <!-- The comments, on the other hand, could be marked as deferred. -->
+        <!-- Relay will split the query into its required and deferred parts,
+          send those up to the server, and start processing the required part of
+          the response immediately without having to wait for the deferred part. -->
+        <!-- In combination with diffing this is especially powerful as the
+          required part may diff away entirely. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">{
+  fragments: {
+    article: () =&gt; Relay.QL`
+      fragment on Article {
+        title
+        <span class="important">${Tags.getFragment('tagged')}</span>
+      }
+    `,
+  },
+}</code></pre>
+        <!-- At an even more fundamental level, Relay queries are inherently
+          dynamic because fragment definitions are expressed in terms of functions
+          invoked at runtime.. -->
+        <!-- In this example we have an arrow function, and we're interpolating
+          arbitrary JavaScript in that ES6
+          template literal to incorporate another GraphQL fragment by reference. -->
+        <!-- We have a build step that takes the above, and turns it into an
+          AST, but it's still expressed in turns of runtime functions. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">{
+  fragments: {
+    article: function article() {
+      return function (<span class="important">RQL_0</span>) {
+        return {
+          children: [].concat.apply([], [{
+            fieldName: 'title',
+            kind: 'Field',
+            metadata: {},
+            type: 'String'
+          }, <span class="important">_reactRelay.default.QL.__frag(RQL_0)</span>]),
+          kind: 'Fragment',
+          metadata: {},
+          name: 'Article_ArticleRelayQL',
+          type: 'Article'
+        };
+      }(<span class="important">_Tags2.default.getFragment('tagged')</span>);
+    }
+  }
+}</code></pre>
+        <!-- This is what the generated AST looks like. -->
+        <!-- You can see the returned function there. -->
+        <!-- And the `getFragment` call that gets evaluated at runtime. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">Relay.createContainer(Parent, {
+  fragments: {
+    parentFragment: () =&gt; Relay.QL`
+      fragment on Foo {
+        id
+        <span class="important">${Child.getFragment('childFragment', {size: 128})}</span>
+      }
+    `,
+  }
+});</code></pre>
+        <!-- Note that not only are the fragment definitions actually
+          functions, but
+          they can both take and pass variables down to their nested fragments.
+        -->
+        <!-- The value of variables can't be reliably known statically. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">module.exports = Relay.createContainer(ProfilePicture, {
+  initialVariables: {size: 50},
+  <span class="important">prepareVariables</span>: prevVariables =&gt; {
+    return {
+      ...prevVariables,
+      <span class="important">size: prevVariables.size * window.devicePixelRatio,</span>
+    };
+  },
+  // ...
+});</code></pre>
+        <!-- Another source of dynamism is the prepareVariables API, which gives
+          us a place to do runtime pre-processing of the variables that will be
+          supplied with a query. -->
+        <!-- prepareVariables is not tractable to analyze statically, because it
+          can contain arbitrary JavaScript.  -->
+      </section>
+
+      <section>
+        <h1>Relay 2 fragments are entirely static</h1>
+        <!-- Fundamental change: instead of referencing other fragments using
+          arbitrary JavaScript interpolation, have Relay query fragments be
+          plain, static strings. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">fragment UserFragment on User {
+  id
+  name
+  <span class="important">...ProfilePicFragment</span>
+}
+
+fragment <span class="important">ProfilePicFragment</span> on User {
+  profilePicture {
+    height
+    width
+    url
+  }
+}</code></pre>
+        <!-- Each fragment has a globally unique name, and incorporates other
+          fragments by reference to their names. -->
+        <!-- One obvious consequence of this is that our build process now needs
+          to be aware of all the fragments in this global namespace, but it has
+          one other big implication... -->
+      </section>
+
+      <section>
+        <h1>But wait...</h1>
+        <h1>If fragment references are static, how can we pass variables from
+          parent to child?</h1>
+      </section>
+
+      <section>
+        <h1>It is not possible to pass arguments to a fragment in GraphQL...</h1>
+        <!-- You cn pass arguments to fields in GraphQL, but it is not possible
+          to pass them to fragments. -->
+      </section>
+
+      <section>
+        <h1>... or is it?</h1>
+      </section>
+
+      <section class="dark philosoraptor photo">
+        <h1>What if we were to <em>polyfill</em> GraphQL?</h1>
+        <!-- Fundamental insight: polyfilling GraphQL. -->
+        <!-- Enables us to have the features we'd like to see in GraphQL today -->
+      </section>
+
+      <section>
+        <h1>Relay 2 uses <code>@directives</code> to polyfill GraphQL</h1>
+        <!-- Directives are an extension mechanism that allows you to decorate a
+          GraphQL query with metadata that can be used in your tool-chain in ways
+          limited only by your creativity. -->
+        <!-- I'll show you what this looks like. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">fragment UserFragment on User {
+  name
+  ...ProfilePicFragment <span class="important">@arguments(size: 128)</span>
+}</code></pre>
+        <!-- This is what passing variables to a fragment looks like. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">fragment ProfilePicFragment
+      on User <span class="important">@argumentDefinitions(</span>
+  <span class="important">size: {type: "Int", defaultValue: 64}</span>
+<span class="important">)</span> {
+  profilePicture(size: $size) {
+    height
+    uri
+    width
+  }
+}</code></pre>
+        <!-- And this is what it looks like to declare the kinds of variables
+          that a fragment accepts. -->
+      </section>
+
+      <section>
+        <img class="full" src="compiler.svg" />
+        <!-- We take the entire corpus of GraphQL documents that comprise an
+          application, feed them through a compiler that applies various
+          transforms to them, and produce an AST that represents the GraphQL
+          we'll execute on the server. -->
+      </section>
+
+      <section>
+        <h1>Compiled output is entirely static</h1>
+        <!-- We can print to a string, to send over the wire, or persist the
+          string onto the server. Either way, this query is entirely
+          statically determined and all we have to do at runtime is supply the
+          necessary variables and issue the query (or its ID) to the server. -->
+      </section>
+
+      <section>
+        <pre><code class="json">{
+  "argumentDefinitions": [
+    {
+      "kind": "LocalArgument",
+      "name": "id",
+      "type": "ID!",
+      "defaultValue": null
+    }
+  ],
+  "kind": "Root",
+  "name": "TestQuery",
+  "operation": "query",
+  "selections": [
+    {
+      "kind": "LinkedField",
+      "alias": null,
+      "concreteType": null,
+      "name": "node",
+      "plural": false,
+      "selections": []
+      "storageKey": null
+    }
+  ]
+}</code></pre>
+        <!-- This is an abbreviated example of the generated AST. It's just a
+          JSON-compatible object with no embedded JavaScript logic. -->
+        <!-- This AST can be used to normalize a server response into a cache
+          (that is, transform it from a tree-shaped network payload to a
+          flattened graph representation with redundancy eliminated), or to read
+          the results for a query out of the cache. -->
+      </section>
+
+      <section>
+        <h1>Whole-program analysis</h1>
+        <!-- It's through whole-program analysis that we are able to do
+          validation as we build the AST. -->
+        <!-- It is also how we make sense of those fragment argument
+          definitions. -->
+      </section>
+
+      <section>
+        <p>All variables either end up resolving to inline literals</p>
+        <p>Or global variables supplied with the query</p>
+        <!-- Fragments can import global variables, receive a variable from
+          their parent fragment, or use a literal default value.  -->
+        <!-- We analyze the flow of variables through the fragment tree and once
+          we've resolved them all, they all become either inline literals or
+          globals.  -->
+      </section>
+
+      <section class="dark photo speed">
+        <h1>Optimizations</h1>
+        <!-- In addition to validation, and adding new features to GraphQL such
+          as parameterized fragments, the compiler's ability to do
+          whole-program analysis at build time means that we can shift a lot of
+          work that would otherwise have to be done at runtime to occur before
+          the app has even run. -->
+      </section>
+
+      <section>
+        <p>Skipping redundant fields</p>
+        <p>Removing unreachable nodes</p>
+        <p>Flattening fragments with matching types</p>
+        <p>Filtering out unreferenced fragments</p>
+        <!-- Here are four examples that I am going to briefly look at today. -->
+        <!-- But there are several others. -->
+        <!-- Together they produce a query tailored for ease of processing and
+          runtime performance. -->
+      </section>
+
+      <section>
+        <h1>Skipping redundant fields</h1>
+      </section>
+
+      <section>
+        <pre><code class="graphql">actor {
+  id
+  ... on Actor {
+    <span class="important">name</span>
+    ... on User {
+      <span class="important">name</span> # fetched by parent
+      <span class="important">lastName</span>
+      ... on User {
+        <span class="important">lastName</span># fetched by parent
+      }
+    }
+  }
+}</code></pre>
+        <!-- As a component author, you specify only the data that your
+          component needs. When components get nested together, there may be a
+          high degree of redundancy when  different, closely-related components
+          end up fetching the same fields. `id` is a common example that often
+          gets fetched at multiple levels. -->
+        <!-- By design, Relay promotes this component-local reasoning,
+          encouraging you to focus on the problem at hand rather than the global
+          efficiency of your data fetching. -->
+        <!-- But if we naively compose fragments together we only get some of
+          the potential efficiency. -->
+        <!-- This is not the query that you would have written by hand if your
+          goal was to make something minimal and efficient. -->
+        <!-- The example query above shows what our aggregate query might look
+          like without the redundancy eliminated. -->
+      </section>
+
+      <section>
+        <pre><code class="graphql">actor {
+  id
+  ... on Actor {
+    <span class="important">name</span>
+    ... on User {
+      <span class="important">lastName</span>
+    }
+  }
+}</code></pre>
+        <!-- Skipping these fields saves the server from wasting time trying to assemble
+          a result that it's already computed. -->
+        <!-- And it saves the client time repeatedly processing a field in a
+          server response during normalization. -->
+      </section>
+
+      <section>
+        <h1>Removing unreachable nodes</h1>
+      </section>
+
+      <section>
+        <pre><code class="graphql">node(id: $id) {
+  ... on User <span class="important">@include(if: false)</span> {
+    id
+    name
+  }
+}</code></pre>
+        <!-- Because variables get inlined when possible, there are many
+          conditional branches that we can statically know that will never be
+          taken. -->
+        <!-- Those can be entirely stripped. -->
+      </section>
+
+      <section>
+        <h1>Flattening fragments with matching types</h1>
+      </section>
+
+      <section>
+        <pre><code class="javascript">
+node(id: $id) {
+  id
+  .... on Node {
+    id
+  }
+  ... on User {
+    ... on Node {
+      id {
+    }
+    <span class="important">firstName</span>
+    <span class="important">surname: lastName</span>
+    ... on User {
+      <span class="important">lastName</span>
+    }
+  }
+}
+</code></pre>
+        <!-- This is another example of the kind of thing that you would be
+          unlikely to write by hand but which is easy to produce inadvertantly
+          when once there are a few layers of abstraction involved preventing
+          you from directly seeing what's going to be sent to the server. -->
+        <!-- Here we have an inline `User` fragment nested inside another `User`
+        fragment. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">node(id: $id) {
+  id
+  ... on User {
+    <span class="important">firstName</span>
+    <span class="important">lastName</span>
+    <span class="important">surname: lastName</span>
+  }
+}</code></pre>
+        <!-- Here too we can eliminate undesired redundancy, flattening those
+          inline fragments to produce a shallower result wherever the types
+          match. -->
+      </section>
+
+      <section>
+        <h1>Filtering out unreferenced fragments</h1>
+        <!-- Here's the final example. -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">query ViewerQuery {
+  viewer {
+    ...ReferencedFragment
+  }
+}
+
+fragment ReferencedFragment on Viewer {
+  ... on User {
+    name
+  }
+}
+
+fragment <span class="important">UnreferencedFragment</span> on Viewer {
+  ... on User {
+    id
+  }
+}</code></pre>
+      </section>
+
+      <section>
+        <pre><code class="javascript">query ViewerQuery {
+  viewer {
+    ...ReferencedFragment
+  }
+}
+
+fragment ReferencedFragment on Viewer {
+  ... on User {
+    name
+  }
+}
+
+# UnreferencedFragment removed.
+</code></pre>
+      <!-- In the next slide we're going to look at the effect of these
+        optimizations and of the simpler execution model in which work is
+        displaced from run-time to build time. -->
+      </section>
+
+      <section>
+        <h2>Timeline</h2>
+        <img class="full" src="timeline.svg" />
+        <!-- Our fetch path is simplified, with no dynamic query constrution or printing. -->
+        <!-- Note that we can render with the normalized data directly. -->
+        <!-- The wins here are impressive but the scale on the diagram isn't
+          quite right. Let's look at some numbers. -->
+      </section>
+
+      <section>
+        <h1>Normalization</h1>
+        <!-- Concretely, we're going to look at some numbers for the time it
+          takes to perform normalization. -->
+      </section>
+
+      <section>
+        <div class="two-columns">
+          <div>
+            <h2>Network format</h2>
+            <pre class="left"><code class="json">{
+  "viewer": {
+    "id": 1000,
+    "father": {
+      "id": 1001,
+      "name": "James",
+      <span class="important">"pet": {"id": 5000, "name": "Skip"}</span>
+    },
+    "mother": {
+      "id": 1002,
+      "name": "Jane",
+      <span class="important">"pet": {"id": 5000, "age": 5}</span>
+    }
+  }
+}</code></pre>
+          </div>
+          <div>
+            <h2>Cache format</h2>
+            <pre class="left"><code class="json">{
+  "1000": {
+    "father": {"__dataID__": 1001},
+    "mother": {"__dataID__": 1002},
+  },
+  "1001": {
+    "name": "James",
+    "pet": <span class="important">{"__dataID__": 5000}</span>
+  },
+  "1002": {
+    "name": "Jane",
+    "pet": <span class="important">{"__dataID__": 5000}</span>
+  },
+  "5000": {
+    "name": "Skip",
+    "age": 5
+  }
+}</code></pre>
+          </div>
+        </div>
+        <!-- Some details elided here (like nested ids). -->
+        <!-- ... -->
+        <!-- We're going to look at the time it takes to "normalize" a server
+          response. -->
+        <!-- Normalization means taking the tree-shaped JSON data and turning it
+          into a flattened representation of the graph with all redundancy
+          removed. -->
+      </section>
+
+      <section class="dark photo rocket">
+        <h1>Time to normalize a complex feed story</h1>
+        <div class="two-columns">
+          <div>
+            <h2>Before</h2>
+            <p class="huge">50ms</p>
+          </div>
+          <div>
+            <h2>After</h2>
+            <p class="huge">5ms</p>
+          </div>
+        </div>
+        <!-- Time to process the server response for a complex feed story on a
+          typical Android device. -->
+        <!-- Combined with RelayConnection (incremental fetching) and small
+          screen size, this means we can do all the processing that we need to
+          do in order to fill the viewport well under the 16ms frame budget. -->
+        <!-- We actually implemented this in native, and it was slower... -->
+        <!-- Why is it so fast? Optimizations reduce redundant processing
+          overhead. Mutable/immutable data. No connection-specific overhead. JS is fast. -->
+        <!-- (next: mutations) -->
+      </section>
+
+      <section class="dark photo tti">
+        <h1>TTI</h1>
+        <h2>Time to interaction</h2>
+        <!-- Of course, there is a lot more to performance than just the cost of
+        normalization (although in Relay 1, it so happens that normalization was
+        a reasonably large chunk of the workload). -->
+        <!-- One of the performance metrics we most care about is TTI or "Time
+          to interaction". -->
+        <!-- Time to load all the application logic, data, render pixels on
+          screen and be interactable. -->
+        <!-- Let's look at some of the ways in which Relay 2 is designed to
+          bring TTI down to a minimum. -->
+      </section>
+
+      <section>
+        <h1>Laziness, impatience <del>and hubris</del></h1>
+        <ul>
+          <li>Building large query strings at runtime.</li>
+          <li>Uploading large query strings at runtime.</li>
+          <li>"Diffing".</li>
+          <li>Computing and storing query paths (for refetchability).</li>
+          <li>Maintaining "tracked queries" (for mutations).</li>
+          <li>Splitting off deferred queries.</li>
+        </ul>
+        <!-- Larry Wall said that the three great virtues of a programmer were
+          laziness, impatience, and hubris. -->
+        <!-- Let's consider laziness. -->
+        <!-- These are all the things we are not doing. -->
+        <!-- I'm going to go into more detail about some if these, but first
+          let's add a few more items to the list of things we don't necessarily
+          have to do any more. -->
+      </section>
+
+      <section>
+        <h1>"Reserved for future expansion"</h1>
+        <ul>
+          <li>Rendering directly off the network.</li>
+          <li>Pre-normalized responses.</li>
+          <li>Native record storage.</li>
+        </ul>
+        <!-- Off the network: we normalize, publish into the store, render; but
+          there is no reason why we couldn't just normalize then render directly
+          for that first load. -->
+        <!-- Native record storage: no connection abstraction at the lowest
+          level of records (just key/value pairs), so we are free to implement
+          them in native if we please. -->
+      </section>
+
+      <section class="dark diff photo">
+        <h1>A world without diffing</h1>
+        <!-- Diffing was one of the original, radical ideas in Relay 1, but it
+          is not free. -->
+        <!-- Great complexity. -->
+        <!-- Runtime overhead. -->
+        <!-- Marginal benefit, especially when optimizing for TTI. -->
+        <!-- If we turn off diffing, there are other ways to get get back some
+          of the benefit. -->
+      </section>
+
+      <section>
+        <ul>
+          <li>Simplified "boolean" diffs</li>
+          <li>No more partial fetches</li>
+          <li>No more <code class="javascript">setVariables</code></li>
+        </ul>
+        <!-- Spell out every query statically. -->
+        <!-- Can still do a primitive all-or-nothing diff to avoid hitting the
+          network, because relay is still a cache. -->
+        <!-- But no more partial fetches. -->
+        <!-- Explicit = easier to reason about. -->
+        <!-- Refetchability: explicit, no more query paths. -->
+        <!-- Can lead to better schema design. -->
+        <!-- The other use case for setVariables was pagination and we have a
+          new API for that.  -->
+      </section>
+
+      <section class="dark photo split">
+        <h1>Splitting deferred queries</h1>
+        <h2>@defer</h2>
+        <!-- So we've thrown out a lot of the "magic" in Relay 1 while trying to
+        preserve its fundamental value. -->
+        <!-- Marbles and bucket analogy. -->
+        <!-- We're trying to keep the most valuable marbles. -->
+        <!-- Deferred queries is a good example. -->
+        <!-- These live on, in the compiler. -->
+        <!-- Given a `@defer` directive we can do the splitting at build time. -->
+      </section>
+
+      <section>
+        <h1>Query batching</h1>
+        <!-- This effectively turns one query into many. -->
+        <!-- In much the same way that RelayConnection turns a single request
+          for a page of data into a request for a stream of items. -->
+        <!-- We need a network layer that is capable of processing multiple
+          queries in a structured way. -->
+      </section>
+
+      <section>
+        <h1>Client-side batching adapter</h1>
+        <img class="full" src="client-side-batches.svg" />
+        <!-- Batch of split queries. -->
+        <!-- Some can be fetched in parallel because they have no dependencies. -->
+        <!-- Others must be executed serially. -->
+        <!-- So we run as many as we can at once and then feed the results back
+          in. -->
+        <!-- This is used for RelayConnection too: re-run params, and a count. -->
+        <!-- "first" 1 "after" null.  -->
+        <!-- Export a cursor, then run again with that as the "after" param. -->
+      </section>
+
+      <section>
+        <h1>DataLoader and caching</h1>
+        <img class="full" src="dataloader.svg" />
+        <!-- Note that that last diagram was a bit simplified. -->
+        <!-- In a real server your GraphQL server is probably not so chatty with
+          whatever back-end storage and services it is communicating with. -->
+        <!-- Probably using dataloader to batch and cache. -->
+        <!-- And probably have other caching layers (memcache etc) in front of
+          the actual storage and services. -->
+      </section>
+
+      <section>
+        <h1>Server-side batching adapter</h1>
+        <img class="full" src="server-side-batches.svg" />
+        <!-- Note that there is nothing stopping us from moving that batch
+          runner from the client to the server: it is just JavaScript. -->
+        <!-- This is beneficial because a round trip at the data center is
+          much faster than a round trip over the wire from the client. -->
+        <!-- Once again here you have the option of reducing the chatty back
+          and forth on the server by using something like data loader and
+          other caching mechanisms. -->
+      </section>
+
+      <section>
+        <h1>Internal batch protocol</h1>
+        <img class="full" src="batch-protocol.svg" />
+        <!-- Finally, for completeness I should mention the batch endpoint that
+          we use at Facebook and where all these ideas were extracted from. It is
+          very similar to the server-side batching I just showed but has existed
+          in our PHP codebase for sometime.-->
+        <!-- So that's query batching. -->
+        <!-- It's something that we've been using with Relay internally at
+          Facebook for a long time. -->
+        <!-- We're very excited to have it coming to open source. -->
+        <!-- ... so I said that mutations are simpler/faster in Relay 2. Let's
+          take a look at why. -->
+      </section>
+
+      <section>
+        <h1>New imperative mutations API</h1>
+        <!-- One place where the declarative API actually didn't help us so much
+          in Relay 1. Ended up involving a lot of cumbersome configuration with
+          a steep learning curve. -->
+        <!-- Mutations are a fundamentally procedural operation — toggle this
+          boolean, append to this list, and so on — so the
+          imperative model ends up fitting well. -->
+      </section>
+
+      <section>
+        <h1>Content of a mutation</h1>
+        <ul>
+          <li><strong>Name:</strong> Identifies the mutation to run.</li>
+          <li><strong>Input:</strong> Variable.</li>
+          <li><strong>Query:</strong> Data to be fetched.</li>
+          <li><strong>Configuration:</strong> How to process the response.</li>
+        </ul>
+        <!-- Name identifying the mutation to run on the server. -->
+        <!-- An input variable. -->
+        <!-- A query describing what should be fetched to update the
+          application's view of the world after the side-effects of the mutation
+          have run their course. -->
+        <!-- Configuration: in Relay 1, this is declarative and somewhat
+          awkward. In Relay 2, much of this ends up being expressed using a
+          simple mutative, imperative API. -->
+      </section>
+
+      <section>
+        <h1>Mutation queries are static</h1>
+        <!-- Mutation queries are now static, like everything else in Relay 2. -->
+      </section>
+
+      <section class="fat light photo">
+        <h1>No more fat queries</h1>
+        <!-- Fat queries were a declaration of all the data that might change as
+          a result of a mutation. -->
+        <!-- Example: liking some content would update things like the
+          list of likers, the likers count, the "viewerDidLike" boolean, and
+          potentially other things. -->
+        <!-- But there are some mutations where deciding what should be
+          invalidated is non-trivial. Consider blocking a friend or logging out. -->
+        <!-- We're going to throw these out in favor of explicit static queries. -->
+        <!-- More predictable, dramatically simpler. -->
+      </section>
+
+      <section class="dark photo tracked">
+        <h1>No more tracked queries</h1>
+        <!-- If we don't have fat queries, then we don't need tracked queries
+          either. -->
+        <!-- No need to burn CPU computing them. -->
+        <!-- No need to allocate memory storing them. -->
+        <!-- No need to implement garbage collection for them. -->
+        <!-- Reduce internal complexity of the framework. -->
+        <!-- ... next: config -->
+      </section>
+
+      <section>
+        <pre><code class="javascript">update(store =&gt; {
+  const page = store.get('4');
+  const viewCount = page.getValue('viewCount');
+  page.setValue('viewCount', viewCount + 1);
+});</code></pre>
+        <!-- In Relay 2, configuration will be much simpler. -->
+        <!-- Provisional, but will look something like this. -->
+        <!-- This is code to perform an optimistic update, where we anticipate
+          what the final data is going to look like when we get the server
+          response for the mutation query. -->
+        <!-- (next: client fields) -->
+      </section>
+
+      <section>
+        <h1>Client-side fields</h1>
+        <!-- Until now, Relay has been about exposing the data from the server
+          schema to the client. -->
+        <!-- If you wanted to manage client-side state as well, you had to
+          do that separately using some other tool such as Redux or Flux. -->
+        <!-- While it's possible to do, the task of integration is left up to
+          the user. -->
+        <!-- In Relay 2 we intend to make it possible to manage client-side
+          state seamlessly alongside server data through the addition of
+          client-side fields. -->
+      </section>
+
+      <section>
+        <pre><code class="graphql">fragment ExampleFragment on User {
+  <span class="important">drafts</span>
+}
+
+<span class="important">extend type User</span> {
+  <span class="important">drafts</span>: PostsConnection
+}</code></pre>
+        <!-- GraphQL allows us to define new fields on existing types. -->
+        <!-- Here we add a "drafts" field to our user object. -->
+      </section>
+
+      <section>
+        <pre><code class="graphql">fragment ExampleFragment on Node {
+  ... on <span class="important">Thing</span> {
+    id
+  }
+}
+
+fragment ThingFragment on <span class="important">Thing</span> {
+  id
+}
+
+<span class="important">type Thing</span> {
+  id: ID!
+}</code></pre>
+        <!-- We can also define new types. -->
+        <!-- Here we add a "Thing" type. -->
+        <!-- And we can use that in an inline fragment. -->
+        <!-- Or a standalone fragment. -->
+      </section>
+
+      <section>
+        <h1>Client fields in practice</h1>
+        <ul>
+          <li>Client fields get stripped out from server interaction</li>
+          <li>Handlers can synthesize client fields</li>
+          <li>Cache-reading code, garbage collection and mutations are
+            client-field-aware</li>
+        </ul>
+        <!-- In terms of what this means for Relay... -->
+        <!-- Compiler knows to strip client fields from persisted query. -->
+        <!-- Normalizer knows not to expect those fields in the server response. -->
+        <!-- We'll be able to use this as well to implement deep support for
+          custom GraphQL scalar types (ie. types beyond string, int, and bool;
+          things like custom date/time types, URL types etc)  -->
+      </section>
+
+      <section>
+        <h1>Summarizing</h1>
+      </section>
+
+      <section>
+        <p>Static everything</p>
+        <p>GraphQL polyfills</p>
+        <p>Parametrized fragments</p>
+        <p>Whole-program analysis</p>
+        <p>Imperative mutations</p>
+        <p>Client-side fields</p>
+        <!-- So let's review the big ideas here. -->
+      </section>
+
+      <section class="dark faster photo">
+        <h1>Faster</h1>
+      </section>
+
+      <section class="dark simpler photo">
+        <h1>Simpler</h1>
+        <!-- Earlier, I made the claim that Relay 2 is simpler. -->
+        <!-- Less magic. No fat queries, no tracked queries, no diffing. -->
+        <!-- Fewer traversals. Whereas previously we had many traversals, we are
+          now doing a lot more work at build time and less at runtime. We only
+          really need the query AST for normalizing server responses and reading
+          data out of the store. -->
+      </section>
+
+      <section class="dark photo predictable">
+        <h1>More predictable</h1>
+        <!-- Less magic -&gt; easier to reason about -->
+        <!-- Easier to predict behavior -->
+      </section>
+
+      <section>
+        <h1>When can I start using this?</h1>
+      </section>
+
+      <section>
+        <h1>Current status</h1>
+        <ul>
+          <li><strong>Compiler:</strong> Done.</li>
+          <li><strong>Connections:</strong> Prototyped.</li>
+          <li><strong>Mutations:</strong> In progress.</li>
+          <li><strong>Client fields:</strong> Exploration underway.</li>
+        </ul>
+      </section>
+
+      <section class="light photo road">
+        <h1>Migration pathway</h1>
+        <!-- We've carefully kept the surface area of the Relay API small, which
+          means that the move from Relay 1 to Relay 2 is relatively small,
+          despite the drastic changes we have made to the internals. -->
+      </section>
+
+      <section class="dark photo container">
+        <h1>Compatibility container</h1>
+        <!-- We are working on a compatibility layer that will allow you to
+          start porting your low-level "leaf components to Relay 2. -->
+        <!-- Under the covers, it translates these into a Relay 1 compatible
+          format so that they continue to work with the rest of your Relay 1
+          app. -->
+        <!-- You work from the bottom up converting components to Relay 2 style,
+          and when you hit the root, the whole thing is converted and you can
+          throw away the compatibilty layer. -->
+      </section>
+
+      <section class="dark goal photo">
+        <h1>Goal</h1>
+        <h2>Multiple React Native products using Relay 2 in production by
+          end of half</h2>
+      </section>
+
+      <section class="dark photo stretch">
+        <h1>Next</h1>
+        <h2>Bringing Relay 2 to the web</h2>
+        <!-- Stretch goal. -->
+      </section>
+
+      <section class="dark photo stars">
+        <svg class="relay-logo" xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600"><g fill="#F26B00"> <path d="M142.536 198.858c0 26.36-21.368 47.72-47.72 47.72-26.36 0-47.722-21.36-47.722-47.72s21.36-47.72 47.72-47.72c26.355 0 47.722 21.36 47.722 47.72"/><path d="M505.18 414.225H238.124c-35.25 0-63.926-28.674-63.926-63.923s28.678-63.926 63.926-63.926h120.78c20.816 0 37.753-16.938 37.753-37.756s-16.938-37.756-37.753-37.756H94.81c-7.227 0-13.086-5.86-13.086-13.085 0-7.227 5.86-13.086 13.085-13.086h264.093c35.25 0 63.923 28.678 63.923 63.926s-28.674 63.923-63.923 63.923h-120.78c-20.82 0-37.756 16.938-37.756 37.76 0 20.816 16.938 37.753 37.756 37.753H505.18c7.227 0 13.086 5.86 13.086 13.085 0 7.226-5.858 13.085-13.085 13.085z"/><path d="M457.464 401.142c0-26.36 21.36-47.72 47.72-47.72s47.72 21.36 47.72 47.72-21.36 47.72-47.72 47.72-47.72-21.36-47.72-47.72"/></g></svg>
+        <h2>https://facebook.github.io/relay</h2>
+        <h2>@wincent</h2>
+        <!-- So I'll be uploading these slides to my GitHub/Twitter account, and
+          will update the Relay website with them too. -->
+        <!-- Yuzhi and I will be sticking around for Q&A time if you have any
+          questions. -->
+      </section>
+
+    </article>
+    <aside id="notes"></aside>
+    <aside id="presenter" class="hidden">
+      Presenter mode: <strong id="presenter-toggle">ON</strong>
+    </aside>
+    <aside id="timer" class="hidden">
+    </aside>
+    <script src="vendor/highlight/highlight.pack.js"></script>
+    <script>
+      (function() {
+        const KEY_DOWN = 40;
+        const KEY_LEFT = 37;
+        const KEY_RIGHT = 39;
+        const KEY_SPACE = 32;
+        const KEY_UP = 38;
+        const REMOTE_NEXT = 34;
+        const REMOTE_PREV = 33;
+
+        let interval = null;
+        let presenterMode = !!location.search.match(/\bpresenter\b/);
+        const notes = document.getElementById('notes');
+        const slides = document.querySelectorAll('#slides > section');
+        const timer = document.getElementById('timer');
+        const hash = parseInt(location.hash.slice(1), 10);
+        const currentSlideIndex = isNaN(hash) ?
+          0 :
+          Math.max(Math.min(slides.length, hash) - 1, 0);
+        let currentSlide = slides[currentSlideIndex];
+        showSlide(currentSlide);
+
+        if (presenterMode) {
+          if (isNaN(hash)) {
+            const slide = parseInt(localStorage.getItem('slide'), 10);
+            if (!isNaN(slide)) {
+              showSlide(slides[slide]);
+              pushState(slides[slide]);
+            }
+          }
+          document.getElementById('presenter').classList.remove('hidden');
+          startTimer();
+        } else {
+          notes.classList.add('hidden');
+        }
+
+        function zeroPad(number) {
+          return number < 10 ? '0' + number : number;
+        }
+
+        function startTimer() {
+          const start = Date.now();
+          clearInterval(interval);
+          timer.classList.remove('hidden');
+          interval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - start) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            timer.innerText = zeroPad(minutes) + ':' + zeroPad(seconds);
+          }, 250);
+        }
+
+        function nextSlide() {
+          const nextElement = currentSlide.nextElementSibling;
+          pushState(nextElement);
+          showSlide(nextElement, true);
+        }
+
+        function previousSlide() {
+          const previousElement = currentSlide.previousElementSibling;
+          pushState(previousElement);
+          showSlide(previousElement, true);
+        }
+
+        function showSlide(slide, broadcast) {
+          if (slide) {
+            currentSlide.classList.remove('current');
+            slide.classList.add('current');
+            currentSlide = slide;
+            if (presenterMode) {
+              updatePresenterNotes(slide);
+            }
+            if (broadcast) {
+              localStorage.setItem(
+                'slide',
+                Array.prototype.indexOf.call(slides, slide)
+              );
+            }
+          }
+        }
+
+        function updatePresenterNotes(slide) {
+          const comments = Array.prototype.filter.call(
+            slide.childNodes,
+            child => child.nodeType === Node.COMMENT_NODE
+          );
+          const content = comments.reduce((acc, comment) => {
+            const p = document.createElement('p');
+            p.innerHTML = comment.textContent.trim();
+            return acc.concat(p);
+          }, []);
+          while (notes.firstChild) {
+            notes.removeChild(notes.firstChild);
+          }
+          content.forEach(child => notes.appendChild(child));
+          if (content.length) {
+            notes.classList.remove('hidden');
+          } else {
+            notes.classList.add('hidden');
+          }
+        }
+
+        function pushState(slide) {
+          if (slide) {
+            const index = Array.prototype.indexOf.call(slides, slide);
+            history.pushState({index}, '', '#' + (index + 1));
+          }
+        }
+
+        window.onpopstate = ({state}) => {
+          if (state && state.index != null) {
+            showSlide(slides[state.index], true);
+          }
+        };
+        window.onload = () => {
+          document.querySelectorAll('pre code').forEach(hljs.highlightBlock);
+        }
+
+        document.addEventListener('keydown', event => {
+          if (event.ctrlKey || event.altKey || event.metaKey) {
+             return;
+          }
+          const keyCode = event.keyCode;
+          switch (keyCode) {
+            case KEY_DOWN:
+            case KEY_RIGHT:
+            case KEY_SPACE:
+            case REMOTE_NEXT:
+              nextSlide();
+              break;
+            case KEY_LEFT:
+            case KEY_UP:
+            case REMOTE_PREV:
+              previousSlide();
+              break;
+            default:
+              return;
+          }
+          event.preventDefault();
+        });
+
+        const body = document.getElementsByTagName('body')[0];
+
+        function loadContentInIframe(content) {
+          const iframe = document.createElement('iframe');
+          iframe.onload = function() {
+            const text = iframe.contentDocument.body.innerText;
+            const code = document.createElement('code');
+            code.innerText = text;
+            const extension = content.src.match(/\.([a-z]+)$/)[1];
+            if (extension === 'txt') {
+              code.classList.add('nohighlight');
+            } else {
+              code.classList.add(extension);
+            }
+            const pre = document.createElement('pre');
+            pre.appendChild(code);
+            pre.className = content.className;
+            content.parentElement.replaceChild(pre, content);
+            adjustPreElement(pre, code);
+            hljs.highlightBlock(pre);
+          };
+          iframe.src = content.src;
+          body.appendChild(iframe);
+        }
+
+        adjustPreElements();
+        const includes =
+          document.querySelectorAll('script[type="text/plain"]');
+        includes.forEach(loadContentInIframe);
+
+        // Simplistic determination of available height (just looks at inner
+        // slide height, not at siblings).
+        function getAvailableHeight(element) {
+          const {
+            marginBottom,
+            marginTop,
+            paddingBottom,
+            paddingTop,
+          } = window.getComputedStyle(element);
+          let parent = element;
+          while ((parent = parent.parentNode)) {
+            if (parent.tagName === 'SECTION') {
+              return (
+                parseInt(window.getComputedStyle(parent).height, 10) -
+                parseInt(marginBottom, 10) -
+                parseInt(marginTop, 10) -
+                parseInt(paddingBottom, 10) -
+                parseInt(paddingTop, 10)
+              );
+            }
+          }
+        }
+
+        function adjustPreElement(pre, code) {
+          if (
+            pre.classList.contains('left') ||
+            pre.classList.contains('center')
+          ) {
+            code.style.position = 'static';
+            return;
+          }
+          const {width: preWidth} = window.getComputedStyle(pre);
+          const codeWidth = code.offsetWidth;
+          const {
+            fontSize,
+            height: codeHeight,
+          } = window.getComputedStyle(code);
+          const availableHeight = getAvailableHeight(pre);
+          const adjustmentRatio = Math.min(
+            availableHeight ? (availableHeight / parseInt(codeHeight, 10)) : Infinity,
+            codeWidth ? (parseInt(preWidth, 10) / parseInt(codeWidth, 10)) : Infinity
+          );
+          code.style.position = 'static';
+          if (adjustmentRatio === Infinity) {
+            return;
+          }
+          const adjustedSize = parseFloat(fontSize) * adjustmentRatio;
+          code.style.fontSize = adjustedSize + 'px';
+        }
+
+        function adjustPreElements() {
+          document.querySelectorAll('pre > code').forEach(code => {
+            const pre = code.parentElement;
+            adjustPreElement(pre, code);
+          });
+        }
+
+        body.addEventListener('click', event => {
+          const target = event.target;
+          if (target.id === 'presenter-toggle') {
+            presenterMode = !presenterMode;
+            if (presenterMode) {
+              target.innerText = 'ON';
+              updatePresenterNotes(currentSlide);
+              notes.classList.remove('hidden');
+            } else {
+              target.innerText = 'OFF';
+              notes.classList.add('hidden');
+            }
+          }
+        });
+        window.addEventListener('storage', event => {
+          if (event.key === 'slide') {
+            const slide = slides[event.newValue];
+            if (slide) {
+              showSlide(slide);
+              pushState(slide)
+            } else {
+              console.warn(
+                'Unable to find slide for "slide" event value',
+                event.newValue
+              );
+            }
+          }
+        }, false);
+      })();
+    </script>
+  </body>
+</html>

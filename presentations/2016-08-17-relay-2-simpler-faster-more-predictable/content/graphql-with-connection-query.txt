@@ -1,0 +1,19 @@
+query FeedQuery($after: String) {
+  viewer {
+    feed(first: 3, after: $after) {
+      count
+      edges {
+        cursor
+        node {
+          body
+          likeCount
+          title
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

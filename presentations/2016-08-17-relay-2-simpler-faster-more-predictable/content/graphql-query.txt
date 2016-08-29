@@ -1,0 +1,10 @@
+query HomeQuery {
+  viewer {
+    name
+    github {
+      handle
+    }
+    title
+    username
+  }
+}
